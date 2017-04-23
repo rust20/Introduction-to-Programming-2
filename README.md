@@ -1,4 +1,4 @@
-<p1>Project for my assignment</p1>
+<h1>Project for my assignment</h1>
 
 a lot of stuff going on here
 <+> much path finding algorithm
