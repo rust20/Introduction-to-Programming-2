@@ -1,0 +1,8 @@
+#class file
+*.class
+
+#package files
+*.rar
+*.zip
+
+

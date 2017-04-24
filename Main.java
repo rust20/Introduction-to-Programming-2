@@ -3,6 +3,8 @@ import java.util.*;
 import Owjek.Map;
 import Owjek.Owjek;
 import Owjek.Regular;
+import Owjek.Sporty;
+import Owjek.Exclusive;
 
 public class Main{
 	public static void main(String [] args) {
@@ -11,10 +13,13 @@ public class Main{
 		String [] input;
 		do {
 			input = scan.nextLine().split(" ");
-			String start = "";
-			String target = "";
-			String type = "";
 			if (input.length == 0) continue;
+
+			String start;
+			String target;
+			String type;
+			Owjek ojek = null;
+			String result = null;
 			switch(input[0]) {
 				case "print":
 					map.print();
@@ -31,38 +36,76 @@ public class Main{
 						System.out.println("input tidak valid, " + target + " bukan jalan");
 						break;
 					}
-					Owjek ojek;
 					switch(type){
 						case "Regular":
-							ojek = new Regular(start, target); break;
-							/*
-							 * [Jarak] 11,6 KM
-							 * [TipeO] Regular
-							 * [2KMPe] Rp 3.000,00 (+)
-							 * [KMSel] Rp 9.600,00 (+)
-							 * [Promo] Rp 2.400,00 (-)
-							 * [TOTAL] Rp 10.200,00*/
+							ojek = new Regular(start, target);
+							result = String.format(
+									"[Jarak] %.1f KM\n" +
+									"[TipeO] Regular\n" +
+									"[2KMpe] %s (+)\n" +
+									"[KMSel] %s (+)\n" +
+									"[Promo] %s (-)\n" +
+									"[Total] %s \n",
+									ojek.getDistance() * 0.1,
+									currecyFormat(ojek.getKMPertama()),
+									currecyFormat(ojek.getKMSelanjutnya()),
+									currecyFormat(ojek.getPromo()),
+									currecyFormat(ojek.getFinalCost()));
+							break;
 						case "Sporty":
+							ojek = new Sporty(start, target);
+							result = String.format(
+									"[Jarak] %.1f KM\n" +
+									"[TipeO] Sporty\n" +
+									"[5KMpe] %s (+)\n" +
+									"[KMSel] %s (+)\n" +
+									"[Promo] %s (-)\n" +
+									"[Prtks] %s (+)\n" +
+									"[Total] %s\n",
+									ojek.getDistance() * 0.1,
+									currecyFormat(ojek.getKMPertama()),
+									currecyFormat(ojek.getKMSelanjutnya()),
+									currecyFormat(ojek.getPromo()),
+									currecyFormat(ojek.getProteksi()),
+									currecyFormat(ojek.getFinalCost()));
+
+							break;
 						case "Exclusive":
+							ojek = new Exclusive(start, target);
+							result = String.format(
+									"[Jarak] %.1f KM\n" +
+									"[TipeO] Exclusive\n" +
+									"[Fixed] %s (+)\n" +
+									"[KMSel] %s (+)\n" +
+									"[Promo] %s (-)\n" +
+									"[Prtks] %s (+)\n" +
+									"[Total] %s\n",
+									ojek.getDistance() * 0.001,
+									currecyFormat(ojek.getKMPertama()),
+									currecyFormat(ojek.getKMSelanjutnya()),
+									currecyFormat(ojek.getPromo()),
+									currecyFormat(ojek.getProteksi()),
+									currecyFormat(ojek.getFinalCost()));
+							break;
 						default:
-							ojek = new Regular("A1A1", "A1A1");
-							System.out.println("Tipe tidak tersedia");
+							ojek = null;
+							result = "Tipe tidak tersedia";
 					}
-
-					int cost = ojek.getCost();
-					int promo = ojek.getPromo();
-					ojek.getMap().print();
-
-					System.out.printf();
-					System.out.println(cost);
-					System.out.println(promo);
-					System.out.println("========================================================");
-					System.out.println(ojek.getDistance());
-
+					break;
+				case "exit":
 				default:
 					System.out.println("Input tidak valid");
 			}
+			if (ojek != null){
+				ojek.getMap().print();
+				System.out.println(result);
+			}
+
 		} while (!input[0].equals("exit"));
 		scan.close();
+	}
+
+	private static String currecyFormat(int n){
+		return String.format("Rp %d.%03d,00", n/1000, n%1000);
 	}
 }
