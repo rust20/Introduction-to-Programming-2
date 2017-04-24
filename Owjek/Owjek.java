@@ -3,16 +3,31 @@ package Owjek;
 import java.util.*;
 public abstract class Owjek{
 
-	protected int startX;
-	protected int startY;
-	protected int targetX;
-	protected int targetY;
+	protected int distance = -1;
+	protected int costPerKm;
+	protected int firstNKmCost;
+	protected int N;
+	protected int protectionCost;
+	protected int promo;
+	protected int promoKm;
+
+	private int startX;
+	private int startY;
+	private int targetX;
+	private int targetY;
 	private Map map = new Map();
 	private ArrayDeque<Owjek.Pair> queue = new ArrayDeque<Owjek.Pair>();
 
-	public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.charAt(1) - 48; }
+	public Owjek(String start, String target){
+		startX = x(start);
+		startY = y(start);
+		targetX = x(target);
+		targetY = y(target);
+		map.set('S', startX, startY);
+		map.set('F', targetX, targetY);
+	}
+public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.charAt(1) - 48; }
 	public static int y(String s){ return (int) (s.charAt(2) - 'Q') * 10 + (int) s.charAt(3) - 48; }
-
 
 	/**
 	 * @return the map
@@ -31,22 +46,10 @@ public abstract class Owjek{
 		}
 	}
 
-	public Owjek(String start, String target){
-		startX = x(start);
-		startY = y(start);
-		targetX = x(target);
-		targetY = y(target);
-		map.set('S', startX, startY);
-		map.set('F', targetX, targetY);
-		for(int[] ha : minimap)
-			Arrays.fill(ha, 99);
-		minimap[startX][startY] = 0;
-	}
+	private final int [] dirX = {0, -1, 0, 1};
+	private final int [] dirY = {-1, 0, 1, 0};
 
-	private final iir
-		nt [] dirX = {0, -1, 0, 1};
-	private final iint [] dirY = {-1, 0, 1, 0};
-
+	private final int blockDistance = 100;
 	public int shortestPath(int x, int y, int prevX, int prevY){
 		for (int i = 0; i < 4; i++){
 			int nextX = x + dirX[i];
@@ -54,7 +57,7 @@ public abstract class Owjek{
 			if (map.get(nextX, nextY) == 'F'){
 				map.set('.', x, y);
 				map.set('.', prevX, prevY);
-				return 1;
+				return blockDistance;
 			}
 			if (map.get(nextX, nextY) == ' '){
 				queue.add(new Pair(nextX, nextY, x, y));
@@ -66,7 +69,6 @@ public abstract class Owjek{
 		Pair p = queue.poll();
 		tmp = shortestPath(p.x, p.y, p.a, p.b);
 
-
 		for (int i = 0; i < 4; i++) {
 			int nextX = x + dirX[i], nextY = y + dirY[i];
 			if (map.get(nextX, nextY) == '^')
@@ -75,7 +77,7 @@ public abstract class Owjek{
 
 		if (map.get(x, y) == '.' && map.get(prevX, prevY) != 'S'){
 			map.set('.', prevX, prevY);
-			return tmp + 1;
+			return tmp + blockDistance;
 		} else if (map.get(prevX, prevY) != '.'){
 			map.set(' ', prevX, prevY);
 			return tmp;
@@ -84,7 +86,63 @@ public abstract class Owjek{
 		}
 	}
 
-	public abstract int getCost();
-	public abstract int getPromo();
-	public abstract int getDistance();
+	/**
+	 * @return the distance
+	 */
+	//public abstract int getDistance();
+	public int getDistance() {
+		if (distance == -1)
+			distance = shortestPath(startX, startY, startX, startY);
+		return distance ;
+	}
+
+	//public abstract int getCost();
+	public int getTotal(){
+		if (getDistance() < N*1000){
+			return firstNKmCost;
+		} else {
+			return firstNKmCost + (getDistance() - N * 1000 ) * costPerKm / 10;
+		}
+	}
+
+	public int getFinalCost(){
+		//return firstNKmCost +
+		return 0;
+	}
+	//public abstract int getPromo();
+	public int getPromo() {
+		if (getDistance() <= N*1000) {
+			return 0;
+		} else if (getDistance() > (promoKm + N) * 1000){
+			return promoKm * costPerKm * promo / 100;
+		} else {
+			System.out.print("1 >> ");
+			System.out.println(getDistance());
+			System.out.print("2 >> ");
+			System.out.println(getDistance() - N * 1000);
+			System.out.print("3 >> ");
+			System.out.println((getDistance() - N * 1000) * costPerKm);
+			System.out.print("4 >> ");
+			System.out.println((getDistance() - N * 1000) * costPerKm / 1000 * promo);
+			System.out.print("5 >> ");
+			System.out.println((getDistance() - N * 1000) * costPerKm / 1000 * promo / 100);
+			return ((getDistance() - N * 1000) * costPerKm / 1000) * promo / 10;
+		}
+	}
+
+	//public abstract int getKMPertama();
+	public int getKMPertama(){
+		return firstNKmCost;
+	}
+	//public abstract int getKMSelanjutnya();
+	public int getKMSelanjutnya(){
+		return (getDistance() - N * 1000) * costPerKm / 1000;
+	}
+
+	//public abstract int getProteksi();
+	public int getProteksi(){
+		return getTotal() * protectionCost / 100;
+	}
+
+	public abstract String getType();
 }
