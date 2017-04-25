@@ -26,7 +26,7 @@ public abstract class Owjek{
 		map.set('S', startX, startY);
 		map.set('F', targetX, targetY);
 	}
-public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.charAt(1) - 48; }
+	public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.charAt(1) - 48; }
 	public static int y(String s){ return (int) (s.charAt(2) - 'Q') * 10 + (int) s.charAt(3) - 48; }
 
 	/**
@@ -96,19 +96,25 @@ public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.c
 		return distance ;
 	}
 
+	//public abstract int getKMPertama();
+	public int getKMPertama(){
+		return firstNKmCost;
+	}
+
+	//public abstract int getKMSelanjutnya();
+	public int getKMSelanjutnya(){
+		return (getDistance() - N * 1000) * costPerKm / 1000;
+	}
+
 	//public abstract int getCost();
 	public int getTotal(){
 		if (getDistance() < N*1000){
 			return firstNKmCost;
 		} else {
-			return firstNKmCost + (getDistance() - N * 1000 ) * costPerKm / 10;
+			return firstNKmCost + (getDistance() - N * 1000 ) * costPerKm / 1000;
 		}
 	}
 
-	public int getFinalCost(){
-		//return firstNKmCost +
-		return 0;
-	}
 	//public abstract int getPromo();
 	public int getPromo() {
 		if (getDistance() <= N*1000) {
@@ -116,32 +122,21 @@ public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.c
 		} else if (getDistance() > (promoKm + N) * 1000){
 			return promoKm * costPerKm * promo / 100;
 		} else {
-			System.out.print("1 >> ");
-			System.out.println(getDistance());
-			System.out.print("2 >> ");
-			System.out.println(getDistance() - N * 1000);
-			System.out.print("3 >> ");
-			System.out.println((getDistance() - N * 1000) * costPerKm);
-			System.out.print("4 >> ");
-			System.out.println((getDistance() - N * 1000) * costPerKm / 1000 * promo);
-			System.out.print("5 >> ");
-			System.out.println((getDistance() - N * 1000) * costPerKm / 1000 * promo / 100);
-			return ((getDistance() - N * 1000) * costPerKm / 1000) * promo / 10;
+			return getTotal() * promo / 100;
 		}
-	}
-
-	//public abstract int getKMPertama();
-	public int getKMPertama(){
-		return firstNKmCost;
-	}
-	//public abstract int getKMSelanjutnya();
-	public int getKMSelanjutnya(){
-		return (getDistance() - N * 1000) * costPerKm / 1000;
 	}
 
 	//public abstract int getProteksi();
 	public int getProteksi(){
-		return getTotal() * protectionCost / 100;
+		return (getTotal() - getPromo()) * protectionCost / 100;
+	}
+
+	public int getFinalCost(){
+		System.out.println(getTotal());
+		System.out.println(getPromo());
+		System.out.println(getProteksi());
+
+		return getTotal() - getPromo() + getProteksi();
 	}
 
 	public abstract String getType();

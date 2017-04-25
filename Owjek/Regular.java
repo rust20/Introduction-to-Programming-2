@@ -7,12 +7,12 @@ public class Regular extends Owjek {
 	 */
 	public Regular(String start, String target) {
 		super(start, target);
-		costPerKm = 3000;
-		firstNKmCost = 20000;
-		N = 5;
-		protectionCost = 10;
-		promo = 60;
-		promoKm = 8;
+		costPerKm = 1000;
+		firstNKmCost = 3000;
+		N = 2;
+		protectionCost = 0;
+		promo = 40;
+		promoKm = 6;
 	}
 
 	@Override
