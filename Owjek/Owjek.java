@@ -93,7 +93,7 @@ public abstract class Owjek{
 
 	private final int padx = 6;
 	private final int pady = 4;
-	public int shortestPathWithPathFinding(int x, int y, int prevX, int prevY){
+	public int shortestPathWithGraphics(int x, int y, int prevX, int prevY){
 		//System.out.println("\033[2J");
 		System.out.println("\033[3;1H");
 		//map.print();
@@ -121,7 +121,7 @@ public abstract class Owjek{
 
 		int tmp = 0;
 		Pair p = queue.poll();
-		tmp = shortestPathWithPathFinding(p.x, p.y, p.a, p.b);
+		tmp = shortestPathWithGraphics(p.x, p.y, p.a, p.b);
 
 		for (int i = 0; i < 4; i++) {
 			int nextX = x + dirX[i], nextY = y + dirY[i];
@@ -160,7 +160,7 @@ public abstract class Owjek{
 	//public abstract int getDistance();
 	public int getDistance() {
 		if (distance == -1)
-			distance = shortestPathWithPathFinding(startX, startY, startX, startY);
+			distance = shortestPathWithGraphics(startX, startY, startX, startY);
 		return distance ;
 	}
 
