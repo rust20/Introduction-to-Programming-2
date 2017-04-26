@@ -1,8 +1,5 @@
 import java.util.*;
-
-import Owjek.Map;
-import Owjek.Owjek;
-import Owjek.Regular;
+import Owjek.Map; import Owjek.Owjek; import Owjek.Regular;
 import Owjek.Sporty;
 import Owjek.Exclusive;
 
@@ -11,6 +8,7 @@ public class Main{
 		Scanner scan = new Scanner(System.in);
 		Map map = new Map();
 		String [] input;
+		System.out.println("\033[2J\033[1;1HSelamat Datang di aplikasi keren bernama OWjek");
 		do {
 			input = scan.nextLine().split(" ");
 			if (input.length == 0) continue;
@@ -36,6 +34,7 @@ public class Main{
 						System.out.println("input tidak valid, " + target + " bukan jalan");
 						break;
 					}
+					map.print();
 					switch(type){
 						case "Regular":
 							ojek = new Regular(start, target);

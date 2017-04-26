@@ -23,7 +23,7 @@ public abstract class Owjek{
 		startY = y(start);
 		targetX = x(target);
 		targetY = y(target);
-		map.set('S', startX, startY);
+		map.set('*', startX, startY);
 		map.set('F', targetX, targetY);
 	}
 	public static int x(String s){ return (int) (s.charAt(0) - 'A') * 10 + (int) s.charAt(1) - 48; }
@@ -71,15 +71,83 @@ public abstract class Owjek{
 
 		for (int i = 0; i < 4; i++) {
 			int nextX = x + dirX[i], nextY = y + dirY[i];
-			if (map.get(nextX, nextY) == '^')
+			if (map.get(nextX, nextY) == '^') {
 				map.set(' ', nextX, nextY);
+			}
 		}
 
-		if (map.get(x, y) == '.' && map.get(prevX, prevY) != 'S'){
+		if (map.get(prevX, prevY) == 'S' || map.get(x, y) == 'S'){
+			map.set('S', prevX, prevY);
+			map.set('S', x, y);
+			return tmp + blockDistance;
+		} else if (map.get(x, y) == '.' && map.get(prevX, prevY) != '*'){
 			map.set('.', prevX, prevY);
 			return tmp + blockDistance;
 		} else if (map.get(prevX, prevY) != '.'){
 			map.set(' ', prevX, prevY);
+			return tmp;
+		} else {
+			return tmp;
+		}
+	}
+
+	private final int padx = 6;
+	private final int pady = 4;
+	public int shortestPathWithPathFinding(int x, int y, int prevX, int prevY){
+		//System.out.println("\033[2J");
+		System.out.println("\033[3;1H");
+		//map.print();
+		try {
+			Thread.sleep(20);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < 4; i++){
+			int nextX = x + dirX[i];
+			int nextY = y + dirY[i];
+			if (map.get(nextX, nextY) == 'F'){
+				map.set('.', x, y);
+				System.out.print("\033[" + (x+padx) + ";" + (y+pady) + "H.");
+				map.set('.', prevX, prevY);
+				System.out.print("\033[" + ( padx + prevX) + ";" +  (pady + prevY) + "H.");
+				return blockDistance;
+			}
+			if (map.get(nextX, nextY) == ' '){
+				queue.add(new Pair(nextX, nextY, x, y));
+				map.set('^', nextX, nextY);
+				System.out.print("\033[" + (padx + nextX) + ";" + (pady + nextY) + "H^");
+			}
+		}
+
+		int tmp = 0;
+		Pair p = queue.poll();
+		tmp = shortestPathWithPathFinding(p.x, p.y, p.a, p.b);
+
+		for (int i = 0; i < 4; i++) {
+			int nextX = x + dirX[i], nextY = y + dirY[i];
+			if (map.get(nextX, nextY) == '^') {
+				map.set(' ', nextX, nextY);
+				System.out.print("\033[" + (padx + nextX) + ";" + (pady + nextY) + "H ");
+			}
+		}
+
+		try {
+			Thread.sleep(20);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		if (map.get(prevX, prevY) == 'S' || map.get(x, y) == 'S'){
+			map.set('S', prevX, prevY);
+			map.set('S', x, y);
+			//System.out.print("\033[" + (padx + prevX) + ";" + (pady + prevY) + "H.");
+			return tmp + blockDistance;
+		} else if (map.get(x, y) == '.' && map.get(prevX, prevY) != '*'){
+			map.set('.', prevX, prevY);
+			System.out.print("\033[" + (padx + prevX) + ";" + (pady + prevY) + "H.");
+			return tmp + blockDistance;
+		} else if (map.get(prevX, prevY) != '.'){
+			map.set(' ', prevX, prevY);
+			System.out.print("\033[" + (padx + prevX) + ";" + (pady + prevY) + "H ");
 			return tmp;
 		} else {
 			return tmp;
@@ -92,7 +160,7 @@ public abstract class Owjek{
 	//public abstract int getDistance();
 	public int getDistance() {
 		if (distance == -1)
-			distance = shortestPath(startX, startY, startX, startY);
+			distance = shortestPathWithPathFinding(startX, startY, startX, startY);
 		return distance ;
 	}
 
